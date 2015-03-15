@@ -42,7 +42,7 @@
          snipersupport: [850, Game.MOVE, Game.HEAL, Game.HEAL, Game.HEAL, Game.HEAL],
          harvester:     [160, Game.WORK, Game.WORK, Game.WORK, Game.CARRY, Game.MOVE],
          pipehead:      [160, Game.WORK, Game.WORK, Game.WORK, Game.CARRY, Game.MOVE],
-         builder:       [160, Game.WORK, Game.WORK, Game.WORK, Game.CARRY, Game.MOVE],
+         builder:       [190, Game.WORK, Game.WORK, Game.MOVE, Game.CARRY, Game.MOVE],
          fixer:         [160, Game.WORK, Game.WORK, Game.WORK, Game.CARRY, Game.MOVE],
          carrier:       [200, Game.CARRY, Game.CARRY, Game.MOVE, Game.MOVE],
          pipe:          [100, Game.CARRY, Game.MOVE],
@@ -54,7 +54,7 @@
      Memory.buildOrder = [
          'pipehead', 'pipehead', 'pipe', 'pipe', 'pipe', 'pipe', 'pipe',
          'guard', 'guard', 'healer', 'guard', 'healer',
-         'squadhealer', 'squadhealer', 'builder', 'squadguard',
+         'builder', 'squadhealer', 'squadhealer', 'squadguard',
          'snooper',
          'sniper', 'snipersupport', 'sniper',
          'harvester', 'harvester',

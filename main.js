@@ -11,6 +11,7 @@ var mySpawn = Game.spawns.Spawn1;
 
 var pipes = 0;
 var guards = 0;
+var healers = 0;
 var builders = 0;
 
 if (typeof Memory.initialized === 'undefined' || Memory.initialized === false) {
@@ -31,6 +32,7 @@ for(var creepName in Game.creeps) {
             guardWith(creep);
             break;
         case "healer":
+            healers++;
             healWith(creep);
             break;
         case "squadguard":
@@ -40,7 +42,7 @@ for(var creepName in Game.creeps) {
         case "builder":
         case "fixer":
             builders++;
-            buildWith(creep);
+            buildWith(creep, mySpawn);
             break;
     }
 }
@@ -109,6 +111,13 @@ if (!mySpawn.spawning && mySpawn.energy > nextBuildingEnergy) {
     console.log('Build ' + build + ' with name ' + creepName);
 }
 
+if ((guards < 3) && (Memory.buildOrder.indexOf("guard") < 0) && !mySpawn.spawning) {
+    Memory.buildOrder.unshift('guard');
+}
+
+if ((healers < 2) && (Memory.buildOrder.indexOf("healer") < 0) && !mySpawn.spawning) {
+    Memory.buildOrder.unshift('healer');
+}
 
 /*
 
