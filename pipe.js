@@ -21,10 +21,13 @@ module.exports = function(creep) {
     } else {
         // check for dropped energy nearby
         var droppedEnergy = creep.pos.findClosest(Game.DROPPED_ENERGY);
-        if (creep.pos.isNearTo(droppedEnergy)) {
+        if (creep.pos.isNearTo(droppedEnergy) && creep.energy < creep.energyCapacity) {
             creep.memory.pickingUpEnergy = true;
             creep.moveTo(droppedEnergy);
             creep.pickup(droppedEnergy);
+            if (creep.energy == creep.energyCapacity) {
+                creep.memory.pickingUpEnergy = false;
+            }
         } else {
             creep.memory.pickingUpEnergy = false;
         }
