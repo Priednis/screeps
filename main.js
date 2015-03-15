@@ -1,8 +1,85 @@
-//var initialize = require('init');
+var initialize = require('init');
+
+var usePipe = require('pipe');
+var guardWith = require('guard');
+var healWith = require('healer');
 
 var mySpawn = Game.spawns.Spawn1;
-var myRoom = Game.spawns.Spawn1.room;
+//var myRoom = Game.spawns.Spawn1.room;
 
+var guards = 0;
+
+if (typeof Memory.initialized === 'undefined' || Memory.initialized === false) {
+    initialize();
+}
+
+for(var creepName in Game.creeps) {
+    var creep = Game.creeps[creepName];
+
+    switch (creep.memory.role) {
+        case "pipehead":
+        case "pipe":
+            usePipe(creep);
+            break;
+        case "guard":
+            guards++;
+            guardWith(creep);
+            break;
+        case "healer":
+            healWith(creep);
+            break;
+    }
+}
+
+var nextBuild = Memory.buildOrder[0];
+var nextBuildingPlan = Memory.buildingPlan[nextBuild];
+var nextBuildingEnergy = nextBuildingPlan[0];
+
+if (!mySpawn.spawning && mySpawn.energy > nextBuildingEnergy) {
+    var build = Memory.buildOrder.shift();
+
+    // TODO: Perhaps this could be extracted to a separate module
+    switch (build) {
+        case 'pipehead':
+            var creepName = mySpawn.createCreep(
+                nextBuildingPlan.slice(1, nextBuildingPlan.length),
+                null,
+                {
+                    role: 'pipehead',
+                    pipeLocation: Memory.pipeCounter,
+                    target: {x: Memory.pipeToSource[Memory.pipeCounter].x, y: Memory.pipeToSource[Memory.pipeCounter].y}
+                });
+            Memory.pipeToSource[Memory.pipeCounter].name = creepName;
+            Memory.pipeCounter--;
+            break;
+        case 'pipe':
+            var creepName = mySpawn.createCreep(
+                nextBuildingPlan.slice(1, nextBuildingPlan.length),
+                null,
+                {
+                    role: 'pipe',
+                    pipeLocation: Memory.pipeCounter,
+                    target: {x: Memory.pipeToSource[Memory.pipeCounter].x, y: Memory.pipeToSource[Memory.pipeCounter].y}
+                });
+            Memory.pipeToSource[Memory.pipeCounter].name = creepName;
+            Memory.pipeCounter--;
+            break;
+        case 'guard':
+            var creepName = mySpawn.createCreep(nextBuildingPlan.slice(1, nextBuildingPlan.length), null, {role: 'guard'});
+            break;
+        case 'healer':
+            var creepName = mySpawn.createCreep(nextBuildingPlan.slice(1, nextBuildingPlan.length), null, {role: 'healer'});
+            break;
+        default:
+    }
+    console.log('Build ' + build + ' with name ' + creepName);
+}
+
+
+/*
+
+
+// From tutorial
 mySpawn.createCreep(
 	[Game.WORK, Game.CARRY, Game.MOVE],
 	'Worker1'
@@ -57,3 +134,5 @@ for(var i in Game.creeps) {
     }
     
 }
+
+ */
