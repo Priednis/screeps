@@ -3,11 +3,15 @@ var initialize = require('init');
 var usePipe = require('pipe');
 var guardWith = require('guard');
 var healWith = require('healer');
+var squadWith = require('squad');
+var buildWith = require('builder');
 
 var mySpawn = Game.spawns.Spawn1;
 //var myRoom = Game.spawns.Spawn1.room;
 
+var pipes = 0;
 var guards = 0;
+var builders = 0;
 
 if (typeof Memory.initialized === 'undefined' || Memory.initialized === false) {
     initialize();
@@ -19,6 +23,7 @@ for(var creepName in Game.creeps) {
     switch (creep.memory.role) {
         case "pipehead":
         case "pipe":
+            pipes++;
             usePipe(creep);
             break;
         case "guard":
@@ -27,6 +32,15 @@ for(var creepName in Game.creeps) {
             break;
         case "healer":
             healWith(creep);
+            break;
+        case "squadguard":
+        case "squadhealer":
+            squadWith(creep);
+            break;
+        case "builder":
+        case "fixer":
+            builders++;
+            buildWith(creep);
             break;
     }
 }
@@ -69,6 +83,26 @@ if (!mySpawn.spawning && mySpawn.energy > nextBuildingEnergy) {
             break;
         case 'healer':
             var creepName = mySpawn.createCreep(nextBuildingPlan.slice(1, nextBuildingPlan.length), null, {role: 'healer'});
+            break;
+        case 'squadhealer':
+            var creepName = mySpawn.createCreep(
+                nextBuildingPlan.slice(1, nextBuildingPlan.length),
+                null,
+                {role: 'squadhealer', target: {x: 46, y: 25}});
+            break;
+        case 'squadguard':
+            var creepName = mySpawn.createCreep(
+                nextBuildingPlan.slice(1, nextBuildingPlan.length),
+                null,
+                {role: 'squadguard', target: {x:45, y:26}});
+            break;
+        case 'builder':
+            var creepName = mySpawn.createCreep(nextBuildingPlan.slice(1, nextBuildingPlan.length), null, {role: 'builder'});
+            Memory.lastBuilder = creepName;
+            break;
+        case 'fixer':
+            var creepName = mySpawn.createCreep(nextBuildingPlan.slice(1, nextBuildingPlan.length), null, {role: 'fixer'});
+            Memory.lastBuilder = creepName;
             break;
         default:
     }

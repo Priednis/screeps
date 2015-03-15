@@ -54,7 +54,7 @@
      Memory.buildOrder = [
          'pipehead', 'pipehead', 'pipe', 'pipe', 'pipe', 'pipe', 'pipe',
          'guard', 'guard', 'healer', 'guard', 'healer',
-         'squadhealer', 'squadhealer', 'squadguard',
+         'squadhealer', 'squadhealer', 'builder', 'squadguard',
          'snooper',
          'sniper', 'snipersupport', 'sniper',
          'harvester', 'harvester',
