@@ -7,8 +7,10 @@
  *
  * Parts Borrowed from github.com/JacSjoerd
  */
- module.exports = function(){
 
+ var initializer = {
+
+    run: function(Memory, Game) {
      Memory.constructingPipe = true;
      Memory.lastBuilder = undefined;
      Memory.lastSniper = undefined;
@@ -34,20 +36,20 @@
 
      // Building plans
      Memory.buildingPlan = {
-         guard:         [340, Game.ATTACK, Game.ATTACK, Game.ATTACK, Game.MOVE, Game.MOVE],
-         squadguard:    [750, Game.TOUGH, Game.TOUGH, Game.TOUGH, Game.TOUGH, Game.TOUGH, Game.MOVE, Game.RANGED_ATTACK, Game.RANGED_ATTACK, Game.RANGED_ATTACK, Game.RANGED_ATTACK],
-         sniper:        [750, Game.MOVE, Game.RANGED_ATTACK, Game.RANGED_ATTACK, Game.RANGED_ATTACK, Game.RANGED_ATTACK],
-         healer:        [500, Game.HEAL, Game.HEAL, Game.MOVE, Game.MOVE],
-         squadhealer:   [850, Game.HEAL, Game.HEAL, Game.HEAL, Game.HEAL, Game.MOVE],
-         snipersupport: [850, Game.MOVE, Game.HEAL, Game.HEAL, Game.HEAL, Game.HEAL],
-         harvester:     [160, Game.WORK, Game.WORK, Game.WORK, Game.CARRY, Game.MOVE],
-         pipehead:      [160, Game.WORK, Game.WORK, Game.WORK, Game.CARRY, Game.MOVE],
-         builder:       [190, Game.WORK, Game.WORK, Game.MOVE, Game.CARRY, Game.MOVE],
-         fixer:         [160, Game.WORK, Game.WORK, Game.WORK, Game.CARRY, Game.MOVE],
-         carrier:       [200, Game.CARRY, Game.CARRY, Game.MOVE, Game.MOVE],
-         pipe:          [100, Game.CARRY, Game.MOVE],
-         supplier:      [200, Game.CARRY, Game.CARRY, Game.MOVE, Game.MOVE],
-         snooper:       [200, Game.CARRY, Game.CARRY, Game.MOVE, Game.MOVE]
+         guard:         [340, ATTACK, ATTACK, ATTACK, MOVE, MOVE],
+         squadguard:    [750, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, MOVE, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK],
+         sniper:        [750, MOVE, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK],
+         healer:        [500, HEAL, HEAL, MOVE, MOVE],
+         squadhealer:   [850, HEAL, HEAL, HEAL, HEAL, MOVE],
+         snipersupport: [850, MOVE, HEAL, HEAL, HEAL, HEAL],
+         harvester:     [160, WORK, WORK, WORK, CARRY, MOVE],
+         pipehead:      [300, WORK, WORK, CARRY, MOVE],
+         builder:       [190, WORK, WORK, MOVE, CARRY, MOVE],
+         fixer:         [160, WORK, WORK, WORK, CARRY, MOVE],
+         carrier:       [200, CARRY, CARRY, MOVE, MOVE],
+         pipe:          [100, CARRY, MOVE],
+         supplier:      [200, CARRY, CARRY, MOVE, MOVE],
+         snooper:       [200, CARRY, CARRY, MOVE, MOVE]
      };
 
      // Setup array of initial build sequence.
@@ -67,21 +69,24 @@
 
      // Get path to closest source to create a pipline
      Memory.pipeToSource = [
-         {name: '', x: 43, y: 8},
-         {name: '', x: 44, y: 7},
-         {name: '', x: 45, y: 6},
-         {name: '', x: 45, y: 5},
-         {name: '', x: 45, y: 4},
-         {name: '', x: 45, y: 3},
-         {name: '', x: 46, y: 3}
+         {name: '', x: 24, y: 24},
+         {name: '', x: 26, y: 24},
+         {name: '', x: 28, y: 23},
+         {name: '', x: 30, y: 22},
+         {name: '', x: 32, y: 22},
+         {name: '', x: 34, y: 20},
+         {name: '', x: 35, y: 21}
      ];
-     Memory.pipeCounter = Memory.pipeToSource.length - 1;
+    Memory.pipeCounter = Memory.pipeToSource.length - 1;
 
-     Memory.sourceLocation = [{x: 43, y: 28}, {x: 44, y: 29}];
-     Memory.source1 = {location: {x: 46, y: 2}, harvesters: []};
-     Memory.source2 = {location: {x: 43, y: 29}, harvesters: []};
+     Memory.sourceLocation = [{x: 19, y: 26}, {x: 20, y: 27}];
+     Memory.source1 = {location: {x: 35, y: 20}, harvesters: []};
+     Memory.source2 = {location: {x: 43, y: 44}, harvesters: []};
 
      Memory.initialized = true;
+
      console.log("Initialized!");
+    }
  };
  
+ module.exports = initializer;

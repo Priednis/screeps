@@ -7,7 +7,9 @@ module.exports = function(creep) {
     }
 
     if (creep.memory.role == 'pipehead') {
-        var target = creep.pos.findClosest(Game.SOURCES, {maxOps: 10, ignoreCreeps: true});
+        var sources = creep.room.find(FIND_SOURCES);
+        //var target = creep.pos.findClosest(Game.SOURCES, {maxOps: 10, ignoreCreeps: true});
+        var target = sources[0];
         if (target) {
             creep.harvest(target);
         }
@@ -20,7 +22,9 @@ module.exports = function(creep) {
         }
     } else {
         // check for dropped energy nearby
-        var droppedEnergy = creep.pos.findClosest(Game.DROPPED_ENERGY);
+        //var droppedEnergy = creep.pos.findClosest(Game.DROPPED_ENERGY);
+        var droppedSources = creep.room.find(FIND_DROPPED_RESOURCES);
+        var droppedEnergy = droppedSources[0];
         if (creep.pos.isNearTo(droppedEnergy) && creep.energy < creep.energyCapacity) {
             creep.memory.pickingUpEnergy = true;
             creep.moveTo(droppedEnergy);
@@ -41,7 +45,7 @@ module.exports = function(creep) {
     var pipeLocation = creep.memory.pipeLocation;
     if (pipeLocation !== 0) {
         var nextCarrierName = Memory.pipeToSource[pipeLocation - 1].name;
-        creep.transferEnergy(Game.creeps[nextCarrierName]);
+        creep.transfer(Game.creeps[nextCarrierName], RESOURCE_ENERGY);
     } else {
         // TODO: If no carriers exist, bring the energy back to Spawn
         if (creep.energy < creep.energyCapacity) {
@@ -49,7 +53,7 @@ module.exports = function(creep) {
         } else {
             creep.memory.deliveringEnergy = true;
             creep.moveTo(Game.spawns.Spawn1);
-            creep.transferEnergy(Game.spawns.Spawn1);
+            creep.transfer(Game.spawns.Spawn1, RESOURCE_ENERGY);
         }
     }
 
@@ -57,7 +61,7 @@ module.exports = function(creep) {
     if (creep.hits < creep.hitsMax && creep.energy > 0) {
         creep.memory.deliveringEnergy = true;
         creep.moveTo(Game.spawns.Spawn1);
-        creep.transferEnergy(Game.spawns.Spawn1);
+        creep.transfer(Game.spawns.Spawn1, RESOURCE_ENERGY);
     } else {
         creep.memory.deliveringEnergy = false;
     }

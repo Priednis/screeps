@@ -1,10 +1,26 @@
-var initialize = require('init');
+// var initialize = require('init');
+var initializer = require('init');
 
 var usePipe = require('pipe');
 var guardWith = require('guard');
 var healWith = require('healer');
 var squadWith = require('squad');
 var buildWith = require('builder');
+
+// var roleBuilder = require('role.builder');
+
+// for(var name in Game.creeps) {
+//     var creep = Game.creeps[name];
+//     if(creep.memory.role == 'harvester') {
+//         roleHarvester.run(creep);
+//     }
+//     if(creep.memory.role == 'upgrader') {
+//         roleUpgrader.run(creep);
+//     }
+//     if(creep.memory.role == 'builder') {
+//         roleBuilder.run(creep);
+//     }
+// }
 
 var mySpawn = Game.spawns.Spawn1;
 //var myRoom = Game.spawns.Spawn1.room;
@@ -14,8 +30,18 @@ var guards = 0;
 var healers = 0;
 var builders = 0;
 
+//console.log('Name of Spawn: ' + mySpawn.name);
+if(mySpawn.spawning) { 
+    var spawningCreep = Game.creeps[mySpawn.spawning.name];
+    mySpawn.room.visual.text(
+        '🛠️' + spawningCreep.memory.role,
+        mySpawn.pos.x + 1, 
+        mySpawn.pos.y, 
+        {align: 'left', opacity: 0.8});
+}
+
 if (typeof Memory.initialized === 'undefined' || Memory.initialized === false) {
-    initialize();
+    initializer.run(Memory, Game);
 }
 
 for(var creepName in Game.creeps) {
@@ -51,27 +77,33 @@ var nextBuild = Memory.buildOrder[0];
 var nextBuildingPlan = Memory.buildingPlan[nextBuild];
 var nextBuildingEnergy = nextBuildingPlan[0];
 
-if (!mySpawn.spawning && mySpawn.energy > nextBuildingEnergy) {
+if (!mySpawn.spawning && mySpawn.energy >= nextBuildingEnergy) {
     var build = Memory.buildOrder.shift();
 
     // TODO: Perhaps this could be extracted to a separate module
     switch (build) {
         case 'pipehead':
-            var creepName = mySpawn.createCreep(
+            console.log('nextBuild: ' + nextBuild);
+            console.log('Will try to SpawnCreep with plan: ' + nextBuildingPlan.slice(1, nextBuildingPlan.length));
+            var creepName = mySpawn.spawnCreep(
                 nextBuildingPlan.slice(1, nextBuildingPlan.length),
-                null,
+                'pipehead' + pipes,
                 {
-                    role: 'pipehead',
-                    pipeLocation: Memory.pipeCounter,
-                    target: {x: Memory.pipeToSource[Memory.pipeCounter].x, y: Memory.pipeToSource[Memory.pipeCounter].y}
+                    memory: {
+                        role: 'pipehead',
+                        pipeLocation: Memory.pipeCounter,
+                        target: {
+                            x: Memory.pipeToSource[Memory.pipeCounter].x, 
+                            y: Memory.pipeToSource[Memory.pipeCounter].y}
+                        }
                 });
             Memory.pipeToSource[Memory.pipeCounter].name = creepName;
             Memory.pipeCounter--;
             break;
         case 'pipe':
-            var creepName = mySpawn.createCreep(
+            var creepName = mySpawn.spawnCreep(
                 nextBuildingPlan.slice(1, nextBuildingPlan.length),
-                null,
+                'pipe' + pipes,
                 {
                     role: 'pipe',
                     pipeLocation: Memory.pipeCounter,
@@ -81,29 +113,29 @@ if (!mySpawn.spawning && mySpawn.energy > nextBuildingEnergy) {
             Memory.pipeCounter--;
             break;
         case 'guard':
-            var creepName = mySpawn.createCreep(nextBuildingPlan.slice(1, nextBuildingPlan.length), null, {role: 'guard'});
+            var creepName = mySpawn.spawnCreep(nextBuildingPlan.slice(1, nextBuildingPlan.length), null, {role: 'guard'});
             break;
         case 'healer':
-            var creepName = mySpawn.createCreep(nextBuildingPlan.slice(1, nextBuildingPlan.length), null, {role: 'healer'});
+            var creepName = mySpawn.spawnCreep(nextBuildingPlan.slice(1, nextBuildingPlan.length), null, {role: 'healer'});
             break;
         case 'squadhealer':
-            var creepName = mySpawn.createCreep(
+            var creepName = mySpawn.spawnCreep(
                 nextBuildingPlan.slice(1, nextBuildingPlan.length),
                 null,
                 {role: 'squadhealer', target: {x: 46, y: 25}});
             break;
         case 'squadguard':
-            var creepName = mySpawn.createCreep(
+            var creepName = mySpawn.spawnCreep(
                 nextBuildingPlan.slice(1, nextBuildingPlan.length),
                 null,
                 {role: 'squadguard', target: {x:45, y:26}});
             break;
         case 'builder':
-            var creepName = mySpawn.createCreep(nextBuildingPlan.slice(1, nextBuildingPlan.length), null, {role: 'builder'});
+            var creepName = mySpawn.spawnCreep(nextBuildingPlan.slice(1, nextBuildingPlan.length), null, {role: 'builder'});
             Memory.lastBuilder = creepName;
             break;
         case 'fixer':
-            var creepName = mySpawn.createCreep(nextBuildingPlan.slice(1, nextBuildingPlan.length), null, {role: 'fixer'});
+            var creepName = mySpawn.spawnCreep(nextBuildingPlan.slice(1, nextBuildingPlan.length), null, {role: 'fixer'});
             Memory.lastBuilder = creepName;
             break;
         default:
@@ -123,19 +155,19 @@ if ((healers < 2) && (Memory.buildOrder.indexOf("healer") < 0) && !mySpawn.spawn
 
 
 // From tutorial
-mySpawn.createCreep(
+mySpawn.spawnCreep(
 	[Game.WORK, Game.CARRY, Game.MOVE],
 	'Worker1'
 );
-mySpawn.createCreep(
+mySpawn.spawnCreep(
 	[Game.WORK, Game.CARRY, Game.MOVE],
 	'Worker2'
 );
-mySpawn.createCreep(
+mySpawn.spawnCreep(
 	[Game.WORK, Game.WORK, Game.WORK, Game.CARRY, Game.MOVE],
 	'Builder1'
 );
-mySpawn.createCreep(
+mySpawn.spawnCreep(
 	[Game.TOUGH, Game.ATTACK, Game.MOVE, Game.MOVE],
 	'Guard1'
 );
