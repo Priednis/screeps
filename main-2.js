@@ -1,10 +1,16 @@
-// Next gen main (for now tutorial)
+// Next gen main
+var initializer = require('init');
 
 var roleHarvester = require('role.harvester');
 var roleUpgrader = require('role.upgrader');
 var roleBuilder = require('role.builder');
 
 module.exports.loop = function () {
+
+    if (typeof Memory.initialized === 'undefined' || Memory.initialized === false) {
+        // TODO: Perhaps the initializer should check if it is initialized itself
+        initializer.run(Memory, Game);
+    }
 
     for(var name in Memory.creeps) {
         if(!Game.creeps[name]) {
@@ -28,14 +34,39 @@ module.exports.loop = function () {
         }
     }
 
+    // TODO: Here will start to decide what creep needs to be generated next
     var harvesters = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
-    console.log('Harvesters: ' + harvesters.length);
+    if (Memory.HarvestersCount != harvesters.length) {
+        console.log('Harvesters: ' + harvesters.length);
+        Memory.HarvestersCount = harvesters.length;
+    }
 
+
+    // TODO: This has to be improved a lot :)
     if(harvesters.length < 2) {
-        var newName = 'Harvester' + Game.time;
-        console.log('Spawning new harvester: ' + newName);
-        Game.spawns['Spawn1'].spawnCreep([WORK,CARRY,MOVE], newName, 
-            {memory: {role: 'harvester'}});        
+        // TODO: Do not try to spawn if the last one is not yet done (not yet really spawning)
+        if (!Game.spawns['Spawn1'].spawning) {
+            
+            // Check if a new harvester can be spawned now
+            var newName = 'Harvester' + Memory.lastHarvesterNr;
+            var testIfCanSpawn = Game.spawns['Spawn1'].spawnCreep([WORK, CARRY, MOVE], 
+                newName, { dryRun: true });
+            
+            switch (testIfCanSpawn) {
+                case ERR_NOT_ENOUGH_ENERGY:
+                    // TODO: Show the message only once
+                    console.log('Not enough energy to spawn: ' + newName);
+                    break;
+                case OK:
+                    console.log('Starting to spawn: ' + newName);
+                    Memory.lastHarvesterNr = ++Memory.lastHarvesterNr
+                    Game.spawns['Spawn1'].spawnCreep(
+                        [WORK,CARRY,MOVE], 
+                        newName, 
+                        {memory: {role: 'harvester'}});
+                    break;
+            }
+        }
     }
 
     if(Game.spawns['Spawn1'].spawning) { 
@@ -47,8 +78,12 @@ module.exports.loop = function () {
             {align: 'left', opacity: 0.8});
     }
 
+    // TODO: Outputs like this could be extracted to some kind of notifier class
     for(var name in Game.rooms) {
-        console.log('Room "'+name+'" has '+Game.rooms[name].energyAvailable+' energy');
+        if (Memory.lastAvailableEnergyValue != Game.rooms[name].energyAvailable) {
+            console.log('Room "'+name+'" has ' + Game.rooms[name].energyAvailable + ' energy');
+            Memory.lastAvailableEnergyValue = Game.rooms[name].energyAvailable;
+        }
     }
 
     for(var name in Game.creeps) {
@@ -65,8 +100,3 @@ module.exports.loop = function () {
     }
 }
 
-
-// Game.spawns['Spawn1'].spawnCreep(
-//      [WORK, CARRY, MOVE],
-//       'Builder1',
-//     { memory: { role: 'builder' } } );
